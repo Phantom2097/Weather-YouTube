@@ -4,25 +4,20 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import android.view.OrientationEventListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.captionBarPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,21 +25,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -91,14 +85,19 @@ class MainActivity : ComponentActivity() {
                 }
 
                 getData(city.value, this, daysList, currentDay)
+//                val darkTheme: Boolean = isSystemInDarkTheme()
+                val backgroundImageId =
+                    if (isSystemInDarkTheme()) R.drawable.weather_background_dark
+                    else R.drawable.weather_background_light
                 Image(
-                    painter = painterResource(id = R.drawable.weather_background),
+                    painter = painterResource(id = backgroundImageId),
                     contentDescription = "background image",
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(0.6f),
+                        .alpha(1f),
                     contentScale = ContentScale.FillBounds
                 )
+
                 val layoutDirection = LocalLayoutDirection.current
                 val displayCutout = WindowInsets.displayCutout.asPaddingValues()
                 val startPadding = displayCutout.calculateStartPadding(layoutDirection)
@@ -117,36 +116,22 @@ class MainActivity : ComponentActivity() {
                 ) {
                     if (layoutConfiguration.orientation != Configuration.ORIENTATION_PORTRAIT) {
                         Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly
+//                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            MainCard(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.5f)
-                                    .fillMaxHeight(),
-                                currentDay = currentDay,
-                                onClickSync = {
-                                    getData(city.value, this@MainActivity, daysList, currentDay)
-                                }, onClickSearch = {
-                                    dialogState.value = true
-                                }
-                            )
-                            TabLayout(daysList, currentDay)
+                            val modifier = Modifier
+                                .fillMaxWidth(0.4f)
+                                .fillMaxHeight()
+
+                            WeatherMainScreen(modifier, currentDay, city.value, this@MainActivity, daysList, dialogState)
                         }
                     } else {
                         Column(
 
                         ) {
-                            MainCard(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                currentDay = currentDay,
-                                onClickSync = {
-                                    getData(city.value, this@MainActivity, daysList, currentDay)
-                                }, onClickSearch = {
-                                    dialogState.value = true
-                                }
-                            )
-                            TabLayout(daysList, currentDay)
+                            val modifier = Modifier
+                                .fillMaxWidth()
+
+                            WeatherMainScreen(modifier, currentDay, city.value, this@MainActivity, daysList, dialogState)
                         }
                     }
 
@@ -155,6 +140,27 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+fun WeatherMainScreen(
+    modifier: Modifier,
+    currentDay: MutableState<WeatherModel>,
+    city: String,
+    context: Context,
+    daysList: MutableState<List<WeatherModel>>,
+    dialogState: MutableState<Boolean>
+) {
+    MainCard(
+        modifier = modifier,
+        currentDay = currentDay,
+        onClickSync = {
+            getData(city, context, daysList, currentDay)
+        }, onClickSearch = {
+            dialogState.value = true
+        }
+    )
+    TabLayout(daysList, currentDay)
 }
 
 const val API_KEY = "e98ddd4851de419ab5e172407243008"

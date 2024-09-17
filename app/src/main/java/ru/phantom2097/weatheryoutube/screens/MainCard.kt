@@ -8,6 +8,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -58,7 +59,7 @@ fun MainCard(
         Card(
             modifier = Modifier
                 .padding(0.dp),
-            colors = CardDefaults.cardColors(LightViolet),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
             elevation = CardDefaults.elevatedCardElevation(0.dp),
             shape = RoundedCornerShape(15.dp),
         ) {
@@ -165,7 +166,7 @@ fun TabLayout(daysList: MutableState<List<WeatherModel>>, currentDay: MutableSta
                     color = Color.White
                 )
             },
-            containerColor = LightViolet,
+            containerColor = MaterialTheme.colorScheme.primary,
         ) {
             tabList.forEachIndexed { index, text ->
                 Tab(

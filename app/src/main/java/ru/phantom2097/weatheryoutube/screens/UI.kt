@@ -51,7 +51,7 @@ fun ListItem(item: WeatherModel, currentDay: MutableState<WeatherModel>) {
                 if (item.hours.isEmpty()) return@clickable
                 currentDay.value = item
             },
-        colors = CardDefaults.cardColors(contentColor = Color.White, containerColor = LightViolet),
+        colors = CardDefaults.cardColors(contentColor = Color.White, containerColor = MaterialTheme.colorScheme.primary),
         elevation = CardDefaults.cardElevation(0.dp),
         shape = RoundedCornerShape(5.dp)
     ) {
