@@ -119,12 +119,15 @@ fun MainCard(
                             tint = Color.White
                         )
                     }
-                    Text(
-                        text = "${currentDay.value.maxTemp.toFloat().toInt()}°/" +
-                                "${currentDay.value.minTemp.toFloat().toInt()}°",
-                        style = TextStyle(fontSize = 20.sp),
-                        color = Color.White
-                    )
+                    if (currentDay.value.currentTemp.isNotEmpty()) {
+                        Text(
+                            text = "${currentDay.value.maxTemp.toFloat().toInt()}°/" +
+                                    "${currentDay.value.minTemp.toFloat().toInt()}°",
+                            style = TextStyle(fontSize = 20.sp),
+                            color = Color.White
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             onClickSync.invoke()

@@ -29,9 +29,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -61,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 val dialogState = remember {
                     mutableStateOf(false)
                 }
-                val city = remember {
+                val city = rememberSaveable() {
                     mutableStateOf("Moscow")
                 }
                 val currentDay = remember {
