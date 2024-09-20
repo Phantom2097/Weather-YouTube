@@ -1,5 +1,6 @@
 package ru.phantom2097.weatheryoutube.screens
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ru.phantom2097.weatheryoutube.data.WeatherModel
+import ru.phantom2097.weatheryoutube.network.NetworkMonitor
 import ru.phantom2097.weatheryoutube.ui.theme.LightViolet
 
 @Composable
@@ -111,4 +115,18 @@ fun DialogSearch(dialogState: MutableState<Boolean>, onSubmit: (String) -> Unit)
             }
         }
     )
+}
+
+@Composable
+fun NetworkStatusScreen(context: Context) {
+    // Инициализация NetworkMonitor
+    val networkMonitor = remember { NetworkMonitor(context) }
+    val isConnected by networkMonitor.isConnected.observeAsState(initial = false)
+
+    // Логика отображения данных на основе подключения
+    if (isConnected) {
+        Text(text = "Интернет подключен")
+    } else {
+        Text(text = "Интернет не подключен")
+    }
 }

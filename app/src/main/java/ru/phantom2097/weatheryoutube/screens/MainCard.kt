@@ -1,5 +1,7 @@
 package ru.phantom2097.weatheryoutube.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -50,7 +52,8 @@ fun MainCard(
     modifier: Modifier,
     currentDay: MutableState<WeatherModel>,
     onClickSync: () -> Unit,
-    onClickSearch: () -> Unit
+    onClickSearch: () -> Unit,
+    context: Context
 ) {
     Column(
         modifier = Modifier
@@ -131,6 +134,7 @@ fun MainCard(
                     IconButton(
                         onClick = {
                             onClickSync.invoke()
+                            Toast.makeText(context, "Sync", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Icon(

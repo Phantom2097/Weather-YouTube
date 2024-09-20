@@ -47,8 +47,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import ru.phantom2097.weatheryoutube.data.WeatherModel
+import ru.phantom2097.weatheryoutube.data.loadWeatherData
+import ru.phantom2097.weatheryoutube.data.saveWeatherData
 import ru.phantom2097.weatheryoutube.screens.DialogSearch
 import ru.phantom2097.weatheryoutube.screens.MainCard
+import ru.phantom2097.weatheryoutube.screens.NetworkStatusScreen
 import ru.phantom2097.weatheryoutube.screens.TabLayout
 import ru.phantom2097.weatheryoutube.ui.theme.WeatherYouTubeTheme
 
@@ -58,28 +61,36 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeatherYouTubeTheme {
-                val daysList = remember {
+                NetworkStatusScreen(context = this)
+                val daysList = rememberSaveable() {
                     mutableStateOf(listOf<WeatherModel>())
                 }
                 val dialogState = remember {
                     mutableStateOf(false)
                 }
-                val city = rememberSaveable() {
-                    mutableStateOf("Moscow")
-                }
+                val savedWeather = loadWeatherData(this)
                 val currentDay = remember {
                     mutableStateOf(
-                        WeatherModel(
-                            "",
-                            "",
-                            "23.0",
-                            "",
-                            "",
-                            "23.0",
-                            "15.0",
-                            "",
-                        )
+                        savedWeather
+                            ?: WeatherModel(
+                                "Moscow",
+                                "",
+                                "23.0",
+                                "",
+                                "",
+                                "23.0",
+                                "15.0",
+                                "",
+                            )
                     )
+                }
+
+                if (savedWeather != null) {
+                    currentDay.value = savedWeather
+                }
+
+                val city = rememberSaveable() {
+                    mutableStateOf(currentDay.value.city)
                 }
                 if (dialogState.value) {
                     DialogSearch(dialogState, onSubmit = {
@@ -139,8 +150,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                 }
-
+                fun onStop() {
+                    super.onStop()
+                    // Сохраняем данные погоды при закрытии приложения
+                    saveWeatherData(this, currentDay.value)
+                }
             }
+
         }
     }
 }
@@ -161,7 +177,8 @@ fun WeatherMainScreen(
             getData(city, context, daysList, currentDay)
         }, onClickSearch = {
             dialogState.value = true
-        }
+        },
+        context
     )
     TabLayout(daysList, currentDay)
 }
@@ -188,6 +205,8 @@ private fun getData(
             val list = getWeatherByDays(response)
             currentDay.value = list[0]
             daysList.value = list
+
+            saveWeatherData(context, currentDay.value)
         },
         {
             Log.d("MyLog", "VolleyError: $it")
